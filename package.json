@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "typecheck": "turbo run typecheck",
-    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc && turbo run typecheck",
+    "lint": "pnpm peers check && eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest"
