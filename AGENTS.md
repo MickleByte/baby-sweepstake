@@ -12,4 +12,4 @@ The five default labels, unchanged: `needs-triage`, `needs-info`, `ready-for-age
 
 ### Domain docs
 
-Single-context: one root `GLOSSARY.md` plus `docs/adr/`. Both are created only when needed. See `docs/agents/domain.md`.
+Single-context: one root `GLOSSARY.md` plus `docs/adr/`. See `docs/agents/domain.md`.
