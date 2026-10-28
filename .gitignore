@@ -8,3 +8,6 @@ coverage/
 .terraform/
 *.tfstate
 *.tfstate.*
+
+# Holds the bootstrap stack's variables, including an email address.
+infra/bootstrap/terraform.tfvars

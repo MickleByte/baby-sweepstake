@@ -30,25 +30,39 @@ jobs:
       - run: pnpm build
 
   terraform:
-    name: Terraform fmt and validate
+    name: Terraform fmt, validate, lint and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: hashicorp/setup-terraform@v4
+      - uses: terraform-linters/setup-tflint@v6
+        with:
+          tflint_version: v0.65.0
       - name: terraform fmt -check
         run: |
           if [ ! -d infra ]; then echo "No infra/ directory; skipping."; exit 0; fi
           terraform fmt -check -recursive infra
-      - name: terraform validate (every root module)
+      - name: terraform validate and test (every root module)
         # A root module is any directory under infra/ holding .tf files, except
-        # reusable modules under infra/modules/.
+        # reusable modules under infra/modules/. Modules with a tests/ directory
+        # also run `terraform test`, which uses mocked providers only.
         run: |
           if [ ! -d infra ]; then echo "No infra/ directory; skipping."; exit 0; fi
-          find infra -name '*.tf' -not -path 'infra/modules/*' -not -path '*/.terraform/*' -printf '%h\n' \
+          find infra -name '*.tf' -not -path 'infra/modules/*' -not -path '*/.terraform/*' -not -path '*/tests/*' -printf '%h\n' \
             | sort -u \
             | while read -r dir; do
                 echo "::group::$dir"
                 terraform -chdir="$dir" init -backend=false -input=false
                 terraform -chdir="$dir" validate
+                if [ -d "$dir/tests" ]; then terraform -chdir="$dir" test; fi
                 echo "::endgroup::"
               done
+      - name: tflint
+        env:
+          # The AWS ruleset is fetched from GitHub releases; the token avoids
+          # anonymous rate limits.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -d infra ]; then echo "No infra/ directory; skipping."; exit 0; fi
+          tflint --chdir=infra --init --config="$GITHUB_WORKSPACE/infra/.tflint.hcl"
+          tflint --chdir=infra --recursive --config="$GITHUB_WORKSPACE/infra/.tflint.hcl"

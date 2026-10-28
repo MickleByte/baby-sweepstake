@@ -11,13 +11,17 @@ A pnpm workspace orchestrated by Turborepo:
 | `apps/web`        | The UI: Vite + React + Tailwind, served from S3 + CloudFront |
 | `apps/api`        | The API: Lambda handlers behind a small router               |
 | `packages/domain` | The domain model, shared by both apps                        |
-| `infra/`          | Terraform root modules (not yet created)                     |
+| `infra/`          | Terraform root modules, one per stack                        |
 
 ## Prerequisites
 
 - **Node 24 LTS**, the version in [`.nvmrc`](.nvmrc). With nvm: `nvm use`.
 - **pnpm**, the version pinned in `package.json`'s `packageManager` field. Run `corepack enable` once to get it automatically.
 - **Terraform**, only when working under `infra/`.
+
+## AWS setup
+
+Deploying needs a one-off bootstrap of the AWS account and the GitHub repository settings. Follow [`docs/setup/aws-bootstrap.md`](docs/setup/aws-bootstrap.md).
 
 ## Common commands
 
@@ -37,4 +41,4 @@ To work on a single package, filter it, e.g. `pnpm --filter @baby-sweepstake/web
 
 ## CI
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every pull request and every push to `main`. It installs, lints, type-checks, tests and builds, and runs `terraform fmt -check` and `terraform validate` on every root module under `infra/`.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every pull request and every push to `main`. It installs, lints, type-checks, tests and builds, and runs `terraform fmt -check`, `terraform validate`, `terraform test` (with mocked providers) and `tflint` on every root module under `infra/`.
