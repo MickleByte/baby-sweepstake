@@ -1,0 +1,16 @@
+{
+  "name": "@baby-sweepstake/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node24 --format=esm --sourcemap --outfile=dist/index.mjs",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@baby-sweepstake/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.164",
+    "esbuild": "0.28.2"
+  }
+}
